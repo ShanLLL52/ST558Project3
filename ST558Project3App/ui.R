@@ -89,7 +89,27 @@ shinyUI(dashboardPage(
               ),
       
       tabItem(tabName = "info",
-              h2("model info")
+              box(
+                title = "Logistic Regression Model",
+                status = "primary",
+                solidHeader = TRUE,
+                p(strong("Logistic Regression"), "is an extension of linear regression. It is used to describe and explain the relationship between one", code("binary response"), "and independent variables. It is used when we want to predict a categorical variable based on a set of  independent variables."
+              ),
+              h4("Benefit:"),
+              "It is very useful when we want to predict a binary categorical response."),
+              
+              box(
+                title = "Classification Tree Model",
+                status = "success",
+                solidHeader = TRUE
+              ),
+              
+              box(
+                title = "Random Forest Model",
+                status = "warning",
+                solidHeader = TRUE
+                
+              )
               ),
       
       tabItem(tabName = "fit",
