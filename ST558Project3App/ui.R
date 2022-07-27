@@ -1,8 +1,16 @@
 library(shinydashboard)
 library(shiny)
 library(tidyverse)
+library(DT)
+library(ggplot2)
+library(caret)
 
+# Read in data
 heart <- read_csv("heart.csv")
+
+# Select variable that Interested in
+heart <- heart %>% select(Age, Sex, ChestPainType, RestingBP,
+                          Cholesterol, HeartDisease)
 
 shinyUI(dashboardPage(
   skin = "red",
@@ -25,7 +33,10 @@ shinyUI(dashboardPage(
               box(
                 textOutput("text"),
                 br(),
-                "The data is the", a(href="https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction", target="_blank", strong("Heart Failure Prediction Dataset")), "in kaggle. The dataset contains 1 binary response and 11 predictors."
+                "The data is the", a(href="https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction", target="_blank", strong("Heart Failure Prediction Dataset")), "in kaggle. The dataset contains 1 binary response and 11 predictors.",
+                br(),
+                br(),
+                "For this app, 5 variabls are investigated."
               ),
               box(
                 "The 'About Page' is the introduction page about basic information of the project and dataset.",
@@ -42,7 +53,39 @@ shinyUI(dashboardPage(
               ),
       
       tabItem(tabName = "eda",
-              h2("Eda page")
+              radioButtons(inputId = "type",
+                          label = "Type of Variables",
+                          choices = list("Numeric Variable" = "nvar",
+                                         "Categorical Variable" = "cvar")),
+              
+              conditionalPanel(condition = "input.type == 'nvar'",
+                               selectInput(inputId = "var1",
+                                           label = "Variables",
+                                           choices = list("Age",
+                                                          "RestingBP",
+                                                          "Cholesterol"),
+                                           selected = "Age"),
+                               
+                               selectInput(inputId = "plot1",
+                                           label = "Type of Plot",
+                                           choices = list("Histogram" = "hist",
+                                                          "Box Plot" = "box"))
+                               ),
+              
+              conditionalPanel(condition = "input.type == 'cvar'",
+                               selectInput(inputId = "var2",
+                                           label = "Variables",
+                                           choices = list("Sex",
+                                                          "ChestPainType",
+                                                          "HeartDisease"),
+                                           selected = "HeartDisease"),
+                               
+                               selectInput(inputId = "plot2",
+                                           label = "Type of Plot",
+                                           choices = list("Bar Plot" = "bar"))
+                               ),
+              plotOutput("plots"),
+              dataTableOutput("table")
               ),
       
       tabItem(tabName = "info",
