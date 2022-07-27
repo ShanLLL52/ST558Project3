@@ -95,8 +95,12 @@ shinyUI(dashboardPage(
                 solidHeader = TRUE,
                 p(strong("Logistic Regression"), "is an extension of linear regression. It is used to describe and explain the relationship between one", code("binary response"), "and independent variables. It is used when we want to predict a categorical variable based on a set of  independent variables."
               ),
-              h4("Benefit:"),
-              "It is very useful when we want to predict a binary categorical response."),
+              h4("Benefits:"),
+              "It is very useful when we want to predict a binary response.",
+              h4("Drawbacks:"),
+              "1. The response should be binary.",
+              "2. Observation should be large and indepdently distributed.",
+              "3. "),
               
               box(
                 title = "Classification Tree Model",
