@@ -93,27 +93,53 @@ shinyUI(dashboardPage(
                 title = "Logistic Regression Model",
                 status = "primary",
                 solidHeader = TRUE,
-                p(strong("Logistic Regression"), "is an extension of linear regression. It is used to describe and explain the relationship between one", code("binary response"), "and independent variables. It is used when we want to predict a categorical variable based on a set of  independent variables."
+                collapsible = TRUE,
+                collapsed = TRUE,
+                p(strong("Logistic Regression"), "is an extension of linear regression. It is used to describe and explain the relationship between one", code("binary response"), "and independent variables. It is used when we want to predict a categorical variable based on a set of independent variables."
               ),
-              h4("Benefits:"),
-              "It is very useful when we want to predict a binary response.",
-              h4("Drawbacks:"),
-              "1. The response should be binary.",
-              "2. Observation should be large and indepdently distributed.",
-              "3. "),
+              p("Baisc Logistic Regression models success probability using", strong(em("logistic function")), "Since logistic regression model doesn't have a closed form solution, backsolving shows the logit or log-odds of success is linear in the parameters."),
+              uiOutput("lgmod"),
+              h5(strong("Benefits:")),
+              p("1. Logistic regressionn is very useful when we want to predict a binary response.", br(), "2. It is easier to implement, interpret, and very efficient to train.", br(), "3. In low dimensional dataset, it is less likely to over-fitting"),
+              h5(strong("Drawbacks:")),
+              p("1. The response should be binary.", br(), "2. Observation should be large and indepdently distributed.", br(), "3. Predictors have little or no multicollinearity and the model need to be the linear form."),
+              ),
               
               box(
                 title = "Classification Tree Model",
                 status = "success",
-                solidHeader = TRUE
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                collapsed = TRUE,
+                h4("Tree based method:"),
+                p("Split up predictor space into regions, different predictions for each region.", br(), strong("Classification tree"), "if goal is to classify(predict) group menbership - always use most prevalent class as prediction for a given region. Usually use", code("Gini index"), "or", code("entropy/deviance"),".", strong("Regression tree"), "if goal is to predict a continuous response - always use mean of observation as prediction for a given region. Use", code("resursive binary splitting"), "."),
+                h5(strong("Benefits:")),
+                p("1. Simple to understand and easy to interpret output.", br(),"2. Predictors don't need to be scaled.", br(), "3. No statistical assuptions necessary.", br(), "4. Built in variable selection."),
+                h5(strong("Drawbacks:")),
+                p("1. Small changes in data can vastly change tree.", br(), "2. Greedy algorithm necessary.", br(), "3. Need to prune.")
               ),
               
               box(
                 title = "Random Forest Model",
                 status = "warning",
-                solidHeader = TRUE
+                solidHeader = TRUE,
+                collapsible = TRUE,
+                collapsed = TRUE,
+                strong("Basic intro of Bagged tree:"),
+                p("The", strong("bootstrapping"), "is that we resample from data or a fitted model and apply method or estimation to each resample. We see how the model or method behave.", br(), "For Bootstrap Aggregation(Bagged) for classification tree:", br(), "1. Create a bootstrap sample.", br(), "2. Train tree on the sample.", br(), "3. Repeat B = 1000 times.", br(), "4. Use majority vote as final classification prediction."),
+                strong("Idea of Random Forest:"),
+                p("Random forest follows Bootstrap Aggregation idea. We will create multiple trees from bootstrap samples and average the results. But, we will use a random subset of predictors for each bootstrap tree fit instead of using all predictors."),
+                uiOutput("rf"),
+                h5(strong("Benefits:")),
+                p("1. Decreases variance over an individual tree fit.", br(), "2. Prevents a good predictors or two from dominaating the tree fits."),
+                h5(strong("Drawbacks:")),
+                p("1. Loses interpretability.", br(), "2. Takes long computation time.")
+
+
+                )
                 
-              )
+                
+
               ),
       
       tabItem(tabName = "fit",

@@ -66,7 +66,18 @@ shinyServer(function(input, output) {
     }
   })
 
+  output$lgmod <- renderUI({
+    withMathJax(
+      helpText('$$\\log(\\frac{P(success|x)}{1-P(success|x)})=\\beta_0+\\beta_1x$$')
+      )
+  })
   
+  output$rf <- renderUI({
+    withMathJax(
+      helpText('Number of predictors for Classification: $$m=\\sqrt{p}$$'),
+      helpText('Number of predictors for Regression: $$m=\\frac{p}{3}$$')
+    )
+  })
   output$img <- renderImage({
     list(src = "dataset-cover")
     } ,deleteFile = FALSE)
