@@ -210,19 +210,17 @@ shinyUI(dashboardPage(
                      ),
               tabBox(title = "Model Summary",
                      id = "tab2",
-                     side = "right",
                      tabPanel(
                        title = "Logistic Regression Model",
-                       verbatimTextOutput("lgst"),
                        verbatimTextOutput("logsum")
                      ),
                      tabPanel(
                        title = "Classification Tree Model",
-                       tableOutput("ctsum")
+                       verbatimTextOutput("ctsum")
                      ),
                      tabPanel(
                        title = "Random Forest Model",
-                       tableOutput("rfsum"),
+                       verbatimTextOutput("rfsum"),
                        plotOutput("rfplot")
                      ))
               
