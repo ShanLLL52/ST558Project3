@@ -184,16 +184,16 @@ shinyServer(function(input, output) {
                    preProcess = c("center", "scale"),
                    trControl = trainControl(method = "cv", number = 5),
                    tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
+      fit_imp <- varImp(fit)
+      plot(fit_imp)
     } else{
       fit <- train(rfrecipe_formula(),
                    data = Train,
                    method = "rf",
                    preProcess = c("center", "scale"),
                    tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
+      fit_imp <- varImp(fit)
+      plot(fit_imp)
     }
   })
   
