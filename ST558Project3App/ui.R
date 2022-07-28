@@ -134,16 +134,98 @@ shinyUI(dashboardPage(
                 p("1. Decreases variance over an individual tree fit.", br(), "2. Prevents a good predictors or two from dominaating the tree fits."),
                 h5(strong("Drawbacks:")),
                 p("1. Loses interpretability.", br(), "2. Takes long computation time.")
-
-
                 )
-                
-                
-
               ),
       
       tabItem(tabName = "fit",
-              h2("model fit")
+              # Logistic Model
+              tabBox(title = "Model Fit",
+                     id = "tab1",
+                     # Logistic Regression Model
+                     tabPanel(
+                       title = "Logistic Regression Model",
+                       numericInput(inputId = "lgt",
+                                    label = "Proportion for Training",
+                                    value = 0.7,
+                                    min = 0.1,
+                                    max = 1,
+                                    step = 0.1),
+                       selectInput(
+                         inputId = "logpred",
+                         label = "Select variables:",
+                         choices = names(heart %>% select(-HeartDisease)),
+                         multiple = TRUE,
+                         selected = "Age"
+                         ),
+                       h6(strong("Use 5-fold Cross Validation?")),
+                       checkboxInput(inputId = "lgcrossv",
+                                     label = "Yes",
+                                     value = TRUE
+                                     )
+                     ),
+                     # Classification Tree Model
+                     tabPanel(
+                       title = "Classification Tree Model",
+                       numericInput(inputId = "ctmod",
+                                    label = "Proportion for Training",
+                                    value = 0.7,
+                                    min = 0.1,
+                                    max = 1,
+                                    step = 0.1),
+                       selectInput(
+                         inputId = "ctpred",
+                         label = "Select variables:",
+                         choices = names(heart %>% select(-HeartDisease)),
+                         multiple = TRUE,
+                         selected = "Age"
+                         ),
+                       h6(strong("Use 5-fold Cross Validation?")),
+                       checkboxInput(inputId = "ctcrossv",
+                                     label = "Yes",
+                                     value = TRUE
+                                     )
+                     ),
+                     # Random Forest Model
+                     tabPanel(
+                       title = "Random Forest Model",
+                       numericInput(inputId = "rfmod",
+                                    label = "Proportion for Training",
+                                    value = 0.7,
+                                    min = 0.1,
+                                    max = 1,
+                                    step = 0.1),
+                       selectInput(
+                         inputId = "rfpred",
+                         label = "Select variables:",
+                         choices = names(heart %>% select(-HeartDisease)),
+                         multiple = TRUE,
+                         selected = "Age"
+                         ),
+                       h6(strong("Use 5-fold Cross Validation?")),
+                       checkboxInput(inputId = "rfcrossv",
+                                     label = "Yes",
+                                     value = TRUE
+                                     )
+                     )
+                     ),
+              tabBox(title = "Model Summary",
+                     id = "tab2",
+                     side = "right",
+                     tabPanel(
+                       title = "Logistic Regression Model",
+                       verbatimTextOutput("lgst"),
+                       verbatimTextOutput("logsum")
+                     ),
+                     tabPanel(
+                       title = "Classification Tree Model",
+                       tableOutput("ctsum")
+                     ),
+                     tabPanel(
+                       title = "Random Forest Model",
+                       tableOutput("rfsum"),
+                       plotOutput("rfplot")
+                     ))
+              
               ),
       
       tabItem(tabName = "pred",

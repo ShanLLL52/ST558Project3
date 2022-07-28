@@ -3,7 +3,9 @@ library(shiny)
 library(tidyverse)
 library(DT)
 library(ggplot2)
+library(recipes)
 library(caret)
+
 
 # Read in data
 heart <- read_csv("heart.csv")
@@ -16,7 +18,14 @@ heart$ChestPainType <- factor(heart$ChestPainType)
 heart$HeartDisease <- factor(heart$HeartDisease)
 
 shinyServer(function(input, output) {
-
+  
+  output$img <- renderImage({
+    list(src = "dataset-cover")
+  } ,deleteFile = FALSE)
+  output$text <- renderText({
+    "The purpose of the app is to explore data using different plots and tables, and model the data using different supervised learning models."
+  })
+  
   # Create data for numeric variables
   ndata <- reactive({
     value <- heart %>% select(input$var1)
@@ -78,10 +87,49 @@ shinyServer(function(input, output) {
       helpText('Number of predictors for Regression: $$m=\\frac{p}{3}$$')
     )
   })
-  output$img <- renderImage({
-    list(src = "dataset-cover")
-    } ,deleteFile = FALSE)
-  output$text <- renderText({
-    "The purpose of the app is to explore data using different plots and tables, and model the data using different supervised learning models."
-    })
+  
+  # Logistic Model Fit
+  lgrecipe_formula <- reactive({
+    heart %>%
+      recipe() %>%
+      update_role(HeartDisease,new_role = "outcome") %>%
+      update_role(!!!input$logpred,new_role = "predictor") %>% 
+      prep() %>%
+      formula()
+  })
+  output$logsum <- renderPrint({
+    set.seed(1)
+    trainIndex <- createDataPartition(heart$HeartDisease, p = input$lgt, 
+                                      list = FALSE) 
+    Train <- heart[trainIndex, ]
+    Test <- heart[-trainIndex, ]
+    if (input$lgcrossv){
+      fit <- train(lgrecipe_formula(),
+                   data = Train,
+                   method = "glm",
+                   family = "binomial",
+                   preProcess = c("center", "scale"),
+                   trControl = trainControl(method = "cv", number = 5))
+      summary(fit)
+    } else{
+      fit <- train(lgrecipe_formula(),
+                   data = Train,
+                   method = "glm",
+                   family = "binomial",
+                   preProcess = c("center", "scale"))
+      summary(fit)
+    }
+  })
+  # Classification Tree Fit
+  
+  # Random Forest Fit
+  rfrecipe_formula <- reactive({
+    heart %>%
+      recipe() %>%
+      update_role(HeartDisease,new_role = "outcome") %>%
+      update_role(!!!input$rfpred,new_role = "predictor") %>% 
+      prep() %>%
+      formula()
+  })
+  
 })
