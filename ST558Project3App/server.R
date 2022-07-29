@@ -6,7 +6,6 @@ library(ggplot2)
 library(recipes)
 library(caret)
 
-
 # Read in data
 heart <- read_csv("heart.csv")
 

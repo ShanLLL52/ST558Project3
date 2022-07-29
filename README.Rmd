@@ -1,0 +1,46 @@
+---
+title: "README"
+author: "Shan Luo"
+date: "2022-07-29"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Brief description of the app and its purpose.  
+
+This app allows user to visualize the data, fit three different model with different variables, obtain the prediction from model, and subset the original data.  
+There are five predictors and one binary response from [Heart Failure Prediction Dataset](https://www.kaggle.com/datasets/fedesoriano/heart-failure-prediction).  
+
+The purpose is to allow me to utilize the knowledge about Shiny App.  
+
+# Package Lists
+[`shinydashboard`](https://cran.r-project.org/web/packages/shinydashboard/index.html)  
+[`shiny`](https://cran.r-project.org/web/packages/shiny/index.html)  
+[`tidyverse`](https://www.tidyverse.org/)  
+[`DT`](https://www.rdocumentation.org/packages/DT/versions/0.16)  
+[`ggplot2`](https://ggplot2.tidyverse.org)  
+[`recipes`](https://cran.r-project.org/web/packages/recipes/index.html)  
+[`caret`](https://topepo.github.io/caret/)  
+
+# Install Package Lists
+```{r install Package, echo=TRUE, eval=FALSE}
+install.packages(c("shinydashboard", "shiny", "tidyverse",
+                   "DT", "ggplot2", "recipes", "caret"))
+```
+
+# Run App
+```{r runapp, echo=TRUE, eval=FALSE}
+shiny::runGitHub(repo = "ST558Project3", username = "ShanLLL52")
+```
+
+# Code for Render README
+```{r README, echo=TRUE, eval=FALSE}
+rmarkdown::render("README.Rmd", 
+          output_format = "github_document",
+          output_file = "README.md",
+          output_options = list(
+            html_preview = FALSE))
+```
+
