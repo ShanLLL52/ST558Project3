@@ -5,6 +5,7 @@ library(DT)
 library(ggplot2)
 library(caret)
 
+
 # Read in data
 heart <- read_csv("heart.csv")
 
@@ -208,6 +209,8 @@ shinyUI(dashboardPage(
                                      )
                      )
                      ),
+              actionButton(inputId = "submit",
+                           label = strong("Fit Model !")),
               tabBox(title = "Model Summary",
                      id = "tab2",
                      tabPanel(
@@ -223,9 +226,7 @@ shinyUI(dashboardPage(
                        title = "Random Forest Model",
                        plotOutput("rfplot"),
                        verbatimTextOutput("rfsum")
-                     )),
-              actionButton(inputId = "submit",
-                           label = strong("Fit Model !"))
+                     ))
               
               ),
       
@@ -245,26 +246,39 @@ shinyUI(dashboardPage(
                   multiple = TRUE,
                   selected = "Age"
                 ),
-                textInput(
-                  inputId = "inputage",
-                  label = "Enter the Age:"
-                ),
-                textInput(
-                  inputId = "inputsex",
-                  label = "Enter the Sex:"
-                ),
-                textInput(
-                  inputId = "inputcpt",
-                  label = "Enter the ChestPainType:"
-                ),
-                textInput(
-                  inputId = "inputrbp",
-                  label = "Enter the RestingBP:"
-                ),
-                textInput(
-                  inputId = "inputchol",
-                  label = "Enter the Cholesterol:"
-                ),
+                conditionalPanel(
+                  condition = "input.predvar.includes('Age')",
+                  textInput(
+                    inputId = "inputage",
+                    label = "Enter the Age:"
+                  )),
+                conditionalPanel(
+                  condition = "input.predvar.includes('Sex')",
+                  textInput(
+                    inputId = "inputsex",
+                    label = "Enter the Sex:"
+                  )),
+                conditionalPanel(
+                  condition = "input.predvar.includes('ChestPainType')",
+                  textInput(
+                    inputId = "inputcpt",
+                    label = "Enter the ChestPainType:"
+                  )),
+                conditionalPanel(
+                  condition = "input.predvar.includes('RestingBP')",
+                  textInput(
+                    inputId = "inputrbp",
+                    label = "Enter the RestingBP:"
+                  )),
+                conditionalPanel(
+                  condition = "input.predvar.includes('Cholesterol')",
+                  textInput(
+                    inputId = "inputchol",
+                    label = "Enter the Cholesterol:"
+                  ))
+                
+                
+
               ),
               box(
                 title = "Prediction",
@@ -273,7 +287,24 @@ shinyUI(dashboardPage(
               ),
       
       tabItem(tabName = "data",
-              h2("data page")
+              box(
+                title = "Data",
+                selectInput(
+                  inputId = "alldata",
+                  label = "Select variables:",
+                  choices = names(heart),
+                  multiple = TRUE,
+                  selected = names(heart)
+                  ),
+                downloadButton(outputId = "download",
+                               label = "Download Filtered Data")
+                ),
+                box(
+                  width = 12,
+                  title = "Date for Corresponding Variables",
+                  dataTableOutput("datas"),
+                  verbatimTextOutput("row")
+              )
               )
     )
   )

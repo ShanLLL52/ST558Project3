@@ -267,6 +267,21 @@ shinyServer(function(input, output) {
     }
   })
   })
+  
+  output$datas <- renderDataTable({
+    tab <- heart %>% select(input$alldata)
+    datatable(tab, filter = "top")
+  })
+  output$row <- 
+    renderPrint({
+      input[["datas_rows_all"]]
+    })
+  output$download <- downloadHandler(
+      filename = "Filtered Data.csv",
+      content = function(file){
+        write.csv(heart[input[["datas_rows_all"]], ],
+                  file)})
+
 
 
 })
