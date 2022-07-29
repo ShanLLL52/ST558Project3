@@ -282,6 +282,7 @@ shinyUI(dashboardPage(
               ),
               box(
                 title = "Prediction",
+                dataTableOutput("test"),
                 verbatimTextOutput("userpred")
               )
               ),

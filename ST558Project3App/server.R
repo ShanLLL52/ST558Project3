@@ -266,6 +266,20 @@ shinyServer(function(input, output) {
     }
   })
   })
+  df <- reactive({
+    df <- data.frame(as.numeric(input$inputage),
+                     input$inputsex,
+                     input$inputcpt,
+                     as.numeric(input$inputrbp),
+                     as.numeric(input$inputchol))
+    names(df) <- input$predvar
+    return(df)
+  })
+  output$test <- renderDataTable({
+    df()
+  })
+  
+
   
   output$datas <- renderDataTable({
     tab <- heart %>% select(input$alldata)
