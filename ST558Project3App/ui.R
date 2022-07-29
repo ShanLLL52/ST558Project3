@@ -250,31 +250,36 @@ shinyUI(dashboardPage(
                   condition = "input.predvar.includes('Age')",
                   textInput(
                     inputId = "inputage",
-                    label = "Enter the Age:"
+                    label = "Enter the Age:",
+                    value = 0
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('Sex')",
                   textInput(
                     inputId = "inputsex",
-                    label = "Enter the Sex:"
+                    label = "Enter the Sex:",
+                    value = "F"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('ChestPainType')",
                   textInput(
                     inputId = "inputcpt",
-                    label = "Enter the ChestPainType:"
+                    label = "Enter the ChestPainType:",
+                    value = "ATA"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('RestingBP')",
                   textInput(
                     inputId = "inputrbp",
-                    label = "Enter the RestingBP:"
+                    label = "Enter the RestingBP:",
+                    value = 0
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('Cholesterol')",
                   textInput(
                     inputId = "inputchol",
-                    label = "Enter the Cholesterol:"
+                    label = "Enter the Cholesterol:",
+                    value = 0
                   ))
                 
                 

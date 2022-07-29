@@ -86,16 +86,22 @@ shinyServer(function(input, output) {
       helpText('Number of predictors for Regression: $$m=\\frac{p}{3}$$')
     )
   })
-  
-  # Logistic Model Fit
-  observeEvent(input$submit, {
-  output$logsum <- renderPrint({
-    set.seed(1)
+  # Logistic Regression Model Fit
+  lgtrainIndex <- reactive({
     trainIndex <- createDataPartition(heart$HeartDisease, p = input$lgt, 
                                       list = FALSE) 
+  })
+  ## Create log Train and Test set
+  lgTrain <- reactive({
+    trainIndex <- lgtrainIndex()
     Train <- heart[trainIndex, ]
+  })
+  lgTest <- reactive({
+    trainIndex <- lgtrainIndex()
     Test <- heart[-trainIndex, ]
-    lgrecipe_formula <- reactive({
+  })
+  ## Create log model formula
+  lgrecipe_formula <- reactive({
       heart %>%
         recipe() %>%
         update_role(HeartDisease,new_role = "outcome") %>%
@@ -103,168 +109,156 @@ shinyServer(function(input, output) {
         prep() %>%
         formula()
     })
+  ## Model Fit
+  lgfit <- reactive({
     if (input$lgcrossv){
       fit <- train(lgrecipe_formula(),
-                   data = Train,
-                   method = "glm",
-                   family = "binomial",
-                   preProcess = c("center", "scale"),
-                   trControl = trainControl(method = "cv", number = 5))
-      cm <- confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
-      sum <- summary(fit)
-      print(list(sum, cm))
-    } else{
-      fit <- train(lgrecipe_formula(),
-                   data = Train,
-                   method = "glm",
-                   family = "binomial",
-                   preProcess = c("center", "scale"))
-      cm <- confusionMatrix(data = Test$HeartDisease, 
-                            reference = predict(fit, newdata = Test))
-      sum <- summary(fit)
-      print(list(sum, cm))
+                 data = lgTrain(),
+                 method = "glm",
+                 family = "binomial",
+                 preProcess = c("center", "scale"),
+                 trControl = trainControl(method = "cv", number = 5))
+      } else{
+        fit <- train(lgrecipe_formula(),
+                 data = lgTrain(),
+                 method = "glm",
+                 family = "binomial",
+                 preProcess = c("center", "scale"))
     }
-  })
-  # Classification Tree Fit
-  output$ctsum <- renderPrint({
-    set.seed(1)
+    })
+  
+  # Classification Tree Model Fit
+  cttrainIndex <- reactive({
     trainIndex <- createDataPartition(heart$HeartDisease, p = input$ctmod, 
                                       list = FALSE) 
+  })
+  ## Create Classification Tree Train and Test set
+  ctTrain <- reactive({
+    trainIndex <- cttrainIndex()
     Train <- heart[trainIndex, ]
+  })
+  ctTest <- reactive({
+    trainIndex <- cttrainIndex()
     Test <- heart[-trainIndex, ]
-    ctrecipe_formula <- reactive({
-      heart %>%
-        recipe() %>%
-        update_role(HeartDisease,new_role = "outcome") %>%
-        update_role(!!!input$ctpred,new_role = "predictor") %>% 
-        prep() %>%
-        formula()
-    })
+  })
+  ## Create CT formula
+  ctrecipe_formula <- reactive({
+    heart %>%
+      recipe() %>%
+      update_role(HeartDisease,new_role = "outcome") %>%
+      update_role(!!!input$ctpred,new_role = "predictor") %>% 
+      prep() %>%
+      formula()
+  })
+  ## CT Model Fit
+  ctfit <- reactive({
     if (input$ctcrossv){
       fit <- train(ctrecipe_formula(),
-                   data = Train,
+                   data = ctTrain(),
                    method = "rpart",
                    preProcess = c("center", "scale"),
                    trControl = trainControl(method = "cv", number = 5),
                    tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
                    )
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
     } else{
       fit <- train(ctrecipe_formula(),
-                   data = Train,
+                   data = ctTrain(),
                    method = "rpart",
                    preProcess = c("center", "scale"),
                    tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
-      )
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
+                   )
     }
   })
-  output$ctplot <- renderPlot({
-    set.seed(1)
-    trainIndex <- createDataPartition(heart$HeartDisease, p = input$ctmod, 
+  
+  # Random Forest Model Fit 
+  rftrainIndex <- reactive({
+    trainIndex <- createDataPartition(heart$HeartDisease, p = input$rfmod, 
                                       list = FALSE) 
+  })
+  ## Create Random Forest Train and Test set
+  rfTrain <- reactive({
+    trainIndex <- rftrainIndex()
     Train <- heart[trainIndex, ]
+  })
+  rfTest <- reactive({
+    trainIndex <- rftrainIndex()
     Test <- heart[-trainIndex, ]
-    ctrecipe_formula <- reactive({
-      heart %>%
-        recipe() %>%
-        update_role(HeartDisease,new_role = "outcome") %>%
-        update_role(!!!input$ctpred,new_role = "predictor") %>% 
-        prep() %>%
-        formula()
-    })
-    if (input$ctcrossv){
-      fit <- train(ctrecipe_formula(),
-                   data = Train,
-                   method = "rpart",
+  })
+  ## Create RF formula
+  rfrecipe_formula <- reactive({
+    heart %>%
+      recipe() %>%
+      update_role(HeartDisease,new_role = "outcome") %>%
+      update_role(!!!input$rfpred,new_role = "predictor") %>% 
+      prep() %>%
+      formula()
+  })
+  ## RF Model Fit
+  rffit <- reactive({
+    if (input$rfcrossv){
+      fit <- train(rfrecipe_formula(),
+                   data = rfTrain(),
+                   method = "rf",
                    preProcess = c("center", "scale"),
                    trControl = trainControl(method = "cv", number = 5),
-                   tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
-      )
-      fit_imp <- varImp(fit)
-      plot(fit_imp)
+                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
     } else{
-      fit <- train(ctrecipe_formula(),
-                   data = Train,
-                   method = "rpart",
+      fit <- train(rfrecipe_formula(),
+                   data = rfTrain(),
+                   method = "rf",
                    preProcess = c("center", "scale"),
-                   tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
-      )
-      fit_imp <- varImp(fit)
-      plot(fit_imp)
-      }
+                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
+    }
+  })
+
+
+  
+  
+  
+  
+  
+  
+  # Logistic Model Fit
+  observeEvent(input$submit, {
+  output$logsum <- renderPrint({
+    set.seed(1)
+    fit <- lgfit()
+    Test <- lgTest()
+    cm <- confusionMatrix(data = Test$HeartDisease, 
+                          reference = predict(fit, newdata = Test))
+    sum <- summary(fit)
+    print(list(sum, cm))
+  })
+  # Classification Tree Fit
+  output$ctsum <- renderPrint({
+    set.seed(1)
+    fit <- ctfit()
+    Test <- ctTest()
+    confusionMatrix(data = Test$HeartDisease, 
+                    reference = predict(fit, newdata = Test))
+  })
+  # Classification Tree - Variables Importance Plot
+  output$ctplot <- renderPlot({
+    set.seed(1)
+    fit <- ctfit()
+    fit_imp <- varImp(fit)
+    plot(fit_imp)
   })
   # Random Forest Fit
   output$rfplot <- renderPlot({
     set.seed(1)
-    trainIndex <- createDataPartition(heart$HeartDisease, p = input$rfmod, 
-                                      list = FALSE) 
-    Train <- heart[trainIndex, ]
-    Test <- heart[-trainIndex, ]
-    rfrecipe_formula <- reactive({
-      heart %>%
-        recipe() %>%
-        update_role(HeartDisease,new_role = "outcome") %>%
-        update_role(!!!input$rfpred,new_role = "predictor") %>% 
-        prep() %>%
-        formula()
-    })
-    if (input$rfcrossv){
-      fit <- train(rfrecipe_formula(),
-                   data = Train,
-                   method = "rf",
-                   preProcess = c("center", "scale"),
-                   trControl = trainControl(method = "cv", number = 5),
-                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      fit_imp <- varImp(fit)
-      plot(fit_imp)
-    } else{
-      fit <- train(rfrecipe_formula(),
-                   data = Train,
-                   method = "rf",
-                   preProcess = c("center", "scale"),
-                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      fit_imp <- varImp(fit)
-      plot(fit_imp)
-    }
+    fit <- rffit()
+    fit_imp <- varImp(fit)
+    plot(fit_imp)
   })
-  
+  # Random Forest - Variables Importance Plot
   output$rfsum <- renderPrint({
     set.seed(1)
-    trainIndex <- createDataPartition(heart$HeartDisease, p = input$rfmod, 
-                                      list = FALSE) 
-    Train <- heart[trainIndex, ]
-    Test <- heart[-trainIndex, ]
-    rfrecipe_formula <- reactive({
-      heart %>%
-        recipe() %>%
-        update_role(HeartDisease,new_role = "outcome") %>%
-        update_role(!!!input$rfpred,new_role = "predictor") %>% 
-        prep() %>%
-        formula()
+    fit <- rffit()
+    Test <- rfTest()
+    confusionMatrix(data = Test$HeartDisease, 
+                    reference = predict(fit, newdata = Test))
     })
-    if (input$rfcrossv){
-      fit <- train(rfrecipe_formula(),
-                   data = Train,
-                   method = "rf",
-                   preProcess = c("center", "scale"),
-                   trControl = trainControl(method = "cv", number = 5),
-                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
-    } else{
-      fit <- train(rfrecipe_formula(),
-                   data = Train,
-                   method = "rf",
-                   preProcess = c("center", "scale"),
-                   tuneGrid = data.frame(mtry = 1:length(input$rfpred)))
-      confusionMatrix(data = Test$HeartDisease, 
-                      reference = predict(fit, newdata = Test))
-    }
-  })
   })
   df <- reactive({
     df <- data.frame(as.numeric(input$inputage),
@@ -278,7 +272,13 @@ shinyServer(function(input, output) {
   output$test <- renderDataTable({
     df()
   })
-  
+  output$userpred <- renderPrint({
+    if (input$modtype == 'logit'){
+      fit <- lgfit()
+      predict(fit, newdata = df())
+    }
+
+  })
 
   
   output$datas <- renderDataTable({
