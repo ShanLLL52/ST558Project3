@@ -216,18 +216,60 @@ shinyUI(dashboardPage(
                      ),
                      tabPanel(
                        title = "Classification Tree Model",
+                       plotOutput("ctplot"),
                        verbatimTextOutput("ctsum")
                      ),
                      tabPanel(
                        title = "Random Forest Model",
-                       verbatimTextOutput("rfsum"),
-                       plotOutput("rfplot")
-                     ))
+                       plotOutput("rfplot"),
+                       verbatimTextOutput("rfsum")
+                     )),
+              actionButton(inputId = "submit",
+                           label = strong("Fit Model !"))
               
               ),
       
       tabItem(tabName = "pred",
-              h2("model prediction")
+              box(
+                title = "Model",
+                status = "danger",
+                  radioButtons(inputId = "modtype",
+                           label = strong("Choose your Model!"),
+                           choices = list("Logistic Regression Model" = "logit",
+                                          "Classification Tree Model" = "classtr",
+                                          "Random Forest Model" = "randfmod")),
+                selectInput(
+                  inputId = "predvar",
+                  label = "Select variables:",
+                  choices = names(heart %>% select(-HeartDisease)),
+                  multiple = TRUE,
+                  selected = "Age"
+                ),
+                textInput(
+                  inputId = "inputage",
+                  label = "Enter the Age:"
+                ),
+                textInput(
+                  inputId = "inputsex",
+                  label = "Enter the Sex:"
+                ),
+                textInput(
+                  inputId = "inputcpt",
+                  label = "Enter the ChestPainType:"
+                ),
+                textInput(
+                  inputId = "inputrbp",
+                  label = "Enter the RestingBP:"
+                ),
+                textInput(
+                  inputId = "inputchol",
+                  label = "Enter the Cholesterol:"
+                ),
+              ),
+              box(
+                title = "Prediction",
+                verbatimTextOutput("userpred")
+              )
               ),
       
       tabItem(tabName = "data",

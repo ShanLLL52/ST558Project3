@@ -89,6 +89,7 @@ shinyServer(function(input, output) {
   })
   
   # Logistic Model Fit
+  observeEvent(input$submit, {
   output$logsum <- renderPrint({
     set.seed(1)
     trainIndex <- createDataPartition(heart$HeartDisease, p = input$lgt, 
@@ -162,6 +163,41 @@ shinyServer(function(input, output) {
                       reference = predict(fit, newdata = Test))
     }
   })
+  output$ctplot <- renderPlot({
+    set.seed(1)
+    trainIndex <- createDataPartition(heart$HeartDisease, p = input$ctmod, 
+                                      list = FALSE) 
+    Train <- heart[trainIndex, ]
+    Test <- heart[-trainIndex, ]
+    ctrecipe_formula <- reactive({
+      heart %>%
+        recipe() %>%
+        update_role(HeartDisease,new_role = "outcome") %>%
+        update_role(!!!input$ctpred,new_role = "predictor") %>% 
+        prep() %>%
+        formula()
+    })
+    if (input$ctcrossv){
+      fit <- train(ctrecipe_formula(),
+                   data = Train,
+                   method = "rpart",
+                   preProcess = c("center", "scale"),
+                   trControl = trainControl(method = "cv", number = 5),
+                   tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
+      )
+      fit_imp <- varImp(fit)
+      plot(fit_imp)
+    } else{
+      fit <- train(ctrecipe_formula(),
+                   data = Train,
+                   method = "rpart",
+                   preProcess = c("center", "scale"),
+                   tuneGrid = data.frame(cp = seq(0, 0.1, 0.001))
+      )
+      fit_imp <- varImp(fit)
+      plot(fit_imp)
+      }
+  })
   # Random Forest Fit
   output$rfplot <- renderPlot({
     set.seed(1)
@@ -230,4 +266,7 @@ shinyServer(function(input, output) {
                       reference = predict(fit, newdata = Test))
     }
   })
+  })
+
+
 })
