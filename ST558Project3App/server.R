@@ -289,6 +289,4 @@ shinyServer(function(input, output) {
         write.csv(heart[input[["datas_rows_all"]], ],
                   file)})
 
-
-
 })
