@@ -255,17 +255,19 @@ shinyUI(dashboardPage(
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('Sex')",
-                  textInput(
+                  selectInput(
                     inputId = "inputsex",
                     label = "Enter the Sex:",
-                    value = "F"
+                    choices = list("F", "M"),
+                    selected = "F"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('ChestPainType')",
-                  textInput(
+                  selectInput(
                     inputId = "inputcpt",
                     label = "Enter the ChestPainType:",
-                    value = "ATA"
+                    choices = list("TA","ATA", "NAP","ASY"),
+                    selected = "TA"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('RestingBP')",

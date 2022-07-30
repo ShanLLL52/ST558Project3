@@ -261,13 +261,12 @@ shinyServer(function(input, output) {
     })
   })
   df <- reactive({
-    df <- data.frame(as.numeric(input$inputage),
-                     input$inputsex,
-                     input$inputcpt,
-                     as.numeric(input$inputrbp),
-                     as.numeric(input$inputchol))
-    names(df) <- input$predvar
-    return(df)
+    df <- data.frame("Age" = as.numeric(input$inputage),
+                     "Sex" = input$inputsex,
+                     "ChestPainType" = input$inputcpt,
+                     "RestingBP" = as.numeric(input$inputrbp),
+                     "Cholesterol" = as.numeric(input$inputchol))
+
   })
   output$test <- renderDataTable({
     df()
@@ -275,6 +274,12 @@ shinyServer(function(input, output) {
   output$userpred <- renderPrint({
     if (input$modtype == 'logit'){
       fit <- lgfit()
+      predict(fit, newdata = df())
+    } else if (input$modtype == 'classtr'){
+      fit <- ctfit()
+      predict(fit, newdata = df())
+    } else{
+      fit <- rffit()
       predict(fit, newdata = df())
     }
 
