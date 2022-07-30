@@ -211,13 +211,6 @@ shinyServer(function(input, output) {
     }
   })
 
-
-  
-  
-  
-  
-  
-  
   # Logistic Model Fit
   observeEvent(input$submit, {
   output$logsum <- renderPrint({
@@ -260,16 +253,14 @@ shinyServer(function(input, output) {
                     reference = predict(fit, newdata = Test))
     })
   })
+  
   df <- reactive({
     df <- data.frame("Age" = as.numeric(input$inputage),
                      "Sex" = input$inputsex,
                      "ChestPainType" = input$inputcpt,
                      "RestingBP" = as.numeric(input$inputrbp),
                      "Cholesterol" = as.numeric(input$inputchol))
-
-  })
-  output$test <- renderDataTable({
-    df()
+    
   })
   output$userpred <- renderPrint({
     if (input$modtype == 'logit'){
@@ -282,10 +273,8 @@ shinyServer(function(input, output) {
       fit <- rffit()
       predict(fit, newdata = df())
     }
-
   })
 
-  
   output$datas <- renderDataTable({
     tab <- heart %>% select(input$alldata)
     datatable(tab, filter = "top")

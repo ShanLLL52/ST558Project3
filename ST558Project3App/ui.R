@@ -229,16 +229,15 @@ shinyUI(dashboardPage(
                      ))
               
               ),
-      
       tabItem(tabName = "pred",
               box(
                 title = "Model",
                 status = "danger",
-                  radioButtons(inputId = "modtype",
-                           label = strong("Choose your Model!"),
-                           choices = list("Logistic Regression Model" = "logit",
-                                          "Classification Tree Model" = "classtr",
-                                          "Random Forest Model" = "randfmod")),
+                radioButtons(inputId = "modtype",
+                             label = strong("Choose your Model!"),
+                             choices = list("Logistic Regression Model" = "logit",
+                                            "Classification Tree Model" = "classtr",
+                                            "Random Forest Model" = "randfmod")),
                 selectInput(
                   inputId = "predvar",
                   label = "Select variables:",
@@ -283,17 +282,14 @@ shinyUI(dashboardPage(
                     label = "Enter the Cholesterol:",
                     value = 0
                   ))
-                
-                
-
               ),
               box(
                 title = "Prediction",
                 dataTableOutput("test"),
                 verbatimTextOutput("userpred")
               )
-              ),
-      
+      ),
+
       tabItem(tabName = "data",
               box(
                 title = "Data",
