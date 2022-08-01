@@ -229,16 +229,15 @@ shinyUI(dashboardPage(
                      ))
               
               ),
-      
       tabItem(tabName = "pred",
               box(
                 title = "Model",
                 status = "danger",
-                  radioButtons(inputId = "modtype",
-                           label = strong("Choose your Model!"),
-                           choices = list("Logistic Regression Model" = "logit",
-                                          "Classification Tree Model" = "classtr",
-                                          "Random Forest Model" = "randfmod")),
+                radioButtons(inputId = "modtype",
+                             label = strong("Choose your Model!"),
+                             choices = list("Logistic Regression Model" = "logit",
+                                            "Classification Tree Model" = "classtr",
+                                            "Random Forest Model" = "randfmod")),
                 selectInput(
                   inputId = "predvar",
                   label = "Select variables:",
@@ -250,42 +249,47 @@ shinyUI(dashboardPage(
                   condition = "input.predvar.includes('Age')",
                   textInput(
                     inputId = "inputage",
-                    label = "Enter the Age:"
+                    label = "Enter the Age:",
+                    value = 0
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('Sex')",
-                  textInput(
+                  selectInput(
                     inputId = "inputsex",
-                    label = "Enter the Sex:"
+                    label = "Enter the Sex:",
+                    choices = list("F", "M"),
+                    selected = "F"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('ChestPainType')",
-                  textInput(
+                  selectInput(
                     inputId = "inputcpt",
-                    label = "Enter the ChestPainType:"
+                    label = "Enter the ChestPainType:",
+                    choices = list("TA","ATA", "NAP","ASY"),
+                    selected = "TA"
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('RestingBP')",
                   textInput(
                     inputId = "inputrbp",
-                    label = "Enter the RestingBP:"
+                    label = "Enter the RestingBP:",
+                    value = 0
                   )),
                 conditionalPanel(
                   condition = "input.predvar.includes('Cholesterol')",
                   textInput(
                     inputId = "inputchol",
-                    label = "Enter the Cholesterol:"
+                    label = "Enter the Cholesterol:",
+                    value = 0
                   ))
-                
-                
-
               ),
               box(
                 title = "Prediction",
+                dataTableOutput("test"),
                 verbatimTextOutput("userpred")
               )
-              ),
-      
+      ),
+
       tabItem(tabName = "data",
               box(
                 title = "Data",
